@@ -105,7 +105,7 @@ UsvfsConnector::UsvfsConnector()
 {
   USVFSParameters params;
   LogLevel level = logLevel(Settings::instance().logLevel());
-  USVFSInitParameters(&params, SHMID, false, level);
+  USVFSInitParameters(&params, SHMID, false, level, CrashDumpsType::None, "");
   InitLogging(false);
   CreateVFS(&params);
   SetLogLevel(level);
