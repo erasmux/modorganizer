@@ -368,7 +368,7 @@ If you use pre-releases, never contact me directly by e-mail or via private mess
                   </item>
                   <item>
                     <property name="text">
-                      <string>Info</string>
+                      <string>Info (recommended)</string>
                     </property>
                   </item>
                   <item>
@@ -428,7 +428,7 @@ If you use pre-releases, never contact me directly by e-mail or via private mess
                   </item>
                   <item>
                     <property name="text">
-                      <string>Mini</string>
+                      <string>Mini (recommended)</string>
                     </property>
                   </item>
                   <item>
@@ -455,7 +455,20 @@ If you use pre-releases, never contact me directly by e-mail or via private mess
                 </widget>
               </item>
               <item>
-                <widget class="QLineEdit" name="dumpsMaxEdit">
+                <spacer name="horizontalSpacer_6">
+                  <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                    <size>
+                      <width>60</width>
+                      <height>20</height>
+                    </size>
+                  </property>
+                </spacer>
+              </item>
+              <item>
+                <widget class="QSpinBox" name="dumpsMaxEdit">
                   <property name="toolTip">
                     <string>Maximum number of crash dumps to keep on disk. Use 0 for unlimited.</string>
                   </property>
@@ -464,12 +477,6 @@ If you use pre-releases, never contact me directly by e-mail or via private mess
                       Maximum number of crash dumps to keep on disk. Use 0 for unlimited.
                       Set "Crash Dumps" above to None to disable crash dump collection.
                     </string>
-                  </property>
-                  <property name="inputMask">
-                    <string notr="true">009</string>
-                  </property>
-                  <property name="alignment">
-                    <set>Qt::AlignCenter</set>
                   </property>
                 </widget>
               </item>
