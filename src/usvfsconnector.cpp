@@ -19,6 +19,7 @@ along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "usvfsconnector.h"
 #include "settings.h"
+#include "organizercore.h"
 #include "shared/util.h"
 #include <memory>
 #include <sstream>
@@ -29,7 +30,6 @@ along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDateTime>
 #include <QCoreApplication>
 #include <qstandardpaths.h>
-#include <Shlobj.h>
 
 static const char SHMID[] = "mod_organizer_instance";
 
@@ -124,9 +124,7 @@ UsvfsConnector::UsvfsConnector()
   LogLevel level = logLevel(Settings::instance().logLevel());
   CrashDumpsType dumpType = crashDumpsType(Settings::instance().crashDumpsType());
 
-  wchar_t appDataLocal[MAX_PATH]{ 0 };
-  ::SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, appDataLocal);
-  std::string dumpPath = MOShared::ToString(appDataLocal, true) + "\\modorganizer";
+  std::string dumpPath = MOShared::ToString(OrganizerCore::crashDumpsPath(), true);
   USVFSInitParameters(&params, SHMID, false, level, dumpType, dumpPath.c_str());
   InitLogging(false);
 

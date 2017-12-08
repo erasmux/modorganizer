@@ -47,6 +47,7 @@
 #include <QtGlobal> // for qPrintable, etc
 
 #include <Psapi.h>
+#include <Shlobj.h>
 #include <tchar.h> // for _tcsicmp
 
 #include <limits.h>
@@ -656,6 +657,14 @@ void OrganizerCore::setGlobalCrashDumpsType(int crashDumpsType) {
   m_globalCrashDumpsType = ::crashDumpsType(crashDumpsType);
 }
 
+//static
+std::wstring OrganizerCore::crashDumpsPath() {
+  wchar_t appDataLocal[MAX_PATH]{ 0 };
+  ::SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, appDataLocal);
+  std::wstring dumpPath{ appDataLocal };
+  dumpPath += L"\\modorganizer";
+  return dumpPath;
+}
 
 void OrganizerCore::setCurrentProfile(const QString &profileName)
 {

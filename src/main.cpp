@@ -70,7 +70,6 @@ along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 #include <QDesktopServices>
 #include <QLibraryInfo>
 #include <QSslSocket>
-#include <Shlobj.h>
 
 #include <boost/scoped_array.hpp>
 
@@ -131,10 +130,7 @@ static LONG WINAPI MyUnhandledExceptionFilter(struct _EXCEPTION_POINTERS *except
 {
   LONG result = EXCEPTION_CONTINUE_SEARCH;
 
-  wchar_t appDataLocal[MAX_PATH]{ 0 };
-  ::SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, appDataLocal);
-  std::wstring dumpPath{ appDataLocal };
-  dumpPath += L"\\modorganizer";
+  const std::wstring& dumpPath = OrganizerCore::crashDumpsPath();
   int dumpRes =
     CreateMiniDump(exceptionPtrs, OrganizerCore::getGlobalCrashDumpsType(), dumpPath.c_str());
   if (!dumpRes) {

@@ -162,6 +162,7 @@ public:
 
   static CrashDumpsType getGlobalCrashDumpsType() { return m_globalCrashDumpsType; }
   static void setGlobalCrashDumpsType(int crashDumpsType);
+  static std::wstring crashDumpsPath();
 
 public:
   MOBase::IModRepositoryBridge *createNexusBridge() const;
