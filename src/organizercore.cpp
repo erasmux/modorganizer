@@ -66,6 +66,9 @@
 using namespace MOShared;
 using namespace MOBase;
 
+//static
+CrashDumpsType OrganizerCore::m_globalCrashDumpsType = CrashDumpsType::None;
+
 static bool isOnline()
 {
   QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
@@ -643,9 +646,16 @@ void OrganizerCore::prepareVFS()
   m_USVFS.updateMapping(fileMapping(m_CurrentProfile->name(), QString()));
 }
 
-void OrganizerCore::setLogLevel(int logLevel) {
-  m_USVFS.setLogLevel(logLevel);
+void OrganizerCore::updateVFSParams(int logLevel, int crashDumpsType) {
+  setGlobalCrashDumpsType(crashDumpsType);
+  m_USVFS.updateParams(logLevel, crashDumpsType);
 }
+
+//static
+void OrganizerCore::setGlobalCrashDumpsType(int crashDumpsType) {
+  m_globalCrashDumpsType = ::crashDumpsType(crashDumpsType);
+}
+
 
 void OrganizerCore::setCurrentProfile(const QString &profileName)
 {

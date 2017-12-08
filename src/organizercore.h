@@ -158,7 +158,10 @@ public:
 
   void prepareVFS();
 
-  void setLogLevel(int logLevel);
+  void updateVFSParams(int logLevel, int crashDumpsType);
+
+  static CrashDumpsType getGlobalCrashDumpsType() { return m_globalCrashDumpsType; }
+  static void setGlobalCrashDumpsType(int crashDumpsType);
 
 public:
   MOBase::IModRepositoryBridge *createNexusBridge() const;
@@ -319,6 +322,7 @@ private:
   MOBase::DelayedFileWriter m_PluginListsWriter;
   UsvfsConnector m_USVFS;
 
+  static CrashDumpsType m_globalCrashDumpsType;
 };
 
 #endif // ORGANIZERCORE_H
