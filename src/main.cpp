@@ -128,8 +128,6 @@ bool isNxmLink(const QString &link)
 
 static LONG WINAPI MyUnhandledExceptionFilter(struct _EXCEPTION_POINTERS *exceptionPtrs)
 {
-  LONG result = EXCEPTION_CONTINUE_SEARCH;
-
   const std::wstring& dumpPath = OrganizerCore::crashDumpsPath();
   int dumpRes =
     CreateMiniDump(exceptionPtrs, OrganizerCore::getGlobalCrashDumpsType(), dumpPath.c_str());
