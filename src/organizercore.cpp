@@ -1341,8 +1341,7 @@ bool OrganizerCore::waitForProcessCompletion(HANDLE handle, LPDWORD exitCode, IL
 
       // search if there is another usvfs process active and if so wait for it
       // in theory a querySize of 1 is probably enough since the MO process doesn't seem to be returned by GetVFSProcessList
-      // just in case GetVFSProcessList returns inactive process (or the MO process) we use an arbitrary number > 1
-      constexpr size_t querySize = 5;
+      constexpr size_t querySize = 2; // just to be on the safe side
       DWORD pids[querySize];
       size_t found = querySize;
       if (!::GetVFSProcessList(&found, pids)) {
@@ -1358,15 +1357,8 @@ bool OrganizerCore::waitForProcessCompletion(HANDLE handle, LPDWORD exitCode, IL
           qWarning() << "Failed waiting for process completion : OpenProcess failed" << GetLastError();
           continue;
         }
-        DWORD code = 0;
-        if (!::GetExitCodeProcess(handle, &code))
-          qWarning() << "Failed waiting for process completion : OpenProcess failed" << GetLastError();
-        else if (code == STILL_ACTIVE) {
-          newHandle = true;
-          break;
-        }
-        CloseHandle(handle);
-        handle = INVALID_HANDLE_VALUE;
+        newHandle = true;
+        break;
       }
     }
   }
