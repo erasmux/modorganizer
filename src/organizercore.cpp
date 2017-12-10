@@ -1260,18 +1260,29 @@ HANDLE OrganizerCore::startApplication(const QString &executable,
     }
   }
 
-  if (m_UserInterface)
-    // startApplication is called from commanded line "shortcuts" so there should be no userinterface
-    throw MyException(tr("startApplication() called from user interface?!"));
-
-  LockedDialog dlg;
-  dlg.show();
-  dlg.setEnabled(true);
-
   HANDLE processHandle = spawnBinaryDirect(binary, arguments, profileName, currentDirectory, steamAppID, customOverwrite);
   if (processHandle != INVALID_HANDLE_VALUE) {
+    std::unique_ptr<LockedDialog> dlg;
+    ILockedWaitingForProcess* uilock = nullptr;
+
+    if (m_UserInterface != nullptr) {
+      uilock = m_UserInterface->lock();
+    }
+    else {
+      // i.e. when running command line shortcuts there is no m_UserInterface
+      dlg.reset(new LockedDialog);
+      dlg->show();
+      dlg->setEnabled(true);
+      uilock = dlg.get();
+    }
+
+    ON_BLOCK_EXIT([&]() {
+      if (m_UserInterface != nullptr) {
+        m_UserInterface->unlock();
+      } });
+
     DWORD processExitCode;
-    waitForProcessCompletion(processHandle, &processExitCode, &dlg);
+    waitForProcessCompletion(processHandle, &processExitCode, uilock);
     cycleDiagnostics();
   }
 
