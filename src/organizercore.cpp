@@ -1309,7 +1309,7 @@ bool OrganizerCore::waitForProcessCompletion(HANDLE handle, LPDWORD exitCode, IL
         uilock->setProcessName(processName);
       qDebug() << "Waiting for"
         << (originalHandle ? "spawned" : "usvfs")
-        << "process completion :" << processName;
+        << "process completion :" << processName.toUtf8().constData();
       newHandle = false;
     }
 
