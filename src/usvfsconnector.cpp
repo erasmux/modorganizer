@@ -104,25 +104,11 @@ LogLevel logLevel(int level)
   }
 }
 
-CrashDumpsType crashDumpsType(int type)
-{
-  switch (type) {
-  case CrashDumpsType::Mini:
-    return CrashDumpsType::Mini;
-  case CrashDumpsType::Data:
-    return CrashDumpsType::Data;
-  case CrashDumpsType::Full:
-    return CrashDumpsType::Full;
-  default:
-    return CrashDumpsType::None;
-  }
-}
-
 UsvfsConnector::UsvfsConnector()
 {
   USVFSParameters params;
   LogLevel level = logLevel(Settings::instance().logLevel());
-  CrashDumpsType dumpType = crashDumpsType(Settings::instance().crashDumpsType());
+  CrashDumpsType dumpType = OrganizerCore::toCrashDumpsType(Settings::instance().crashDumpsType());
 
   std::string dumpPath = MOShared::ToString(OrganizerCore::crashDumpsPath(), true);
   USVFSInitParameters(&params, SHMID, false, level, dumpType, dumpPath.c_str());
@@ -195,6 +181,6 @@ void UsvfsConnector::updateMapping(const MappingType &mapping)
   */
 }
 
-void UsvfsConnector::updateParams(int logLevel, int crashDumpsType) {
-  USVFSUpdateParams(::logLevel(logLevel), ::crashDumpsType(crashDumpsType));
+void UsvfsConnector::updateParams(int logLevel, CrashDumpsType crashDumpsType) {
+  USVFSUpdateParams(::logLevel(logLevel), crashDumpsType);
 }

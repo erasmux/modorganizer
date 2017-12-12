@@ -49,6 +49,7 @@ along with Mod Organizer.  If not, see <http://www.gnu.org/licenses/>.
 #include <eh.h>
 #include <windows_error.h>
 #include <usvfs.h>
+#include <crashcollection.h>
 
 #include <QApplication>
 #include <QPushButton>
@@ -118,24 +119,6 @@ bool bootstrap()
   }
 
   return true;
-}
-
-LPTOP_LEVEL_EXCEPTION_FILTER prevUnhandledExceptionFilter = nullptr;
-
-static LONG WINAPI MyUnhandledExceptionFilter(struct _EXCEPTION_POINTERS *exceptionPtrs)
-{
-  const std::wstring& dumpPath = OrganizerCore::crashDumpsPath();
-  int dumpRes =
-    CreateMiniDump(exceptionPtrs, OrganizerCore::getGlobalCrashDumpsType(), dumpPath.c_str());
-  if (!dumpRes)
-    qCritical("ModOrganizer has crashed, crash dump created.");
-  else
-    qCritical("ModOrganizer has crashed, CreateMiniDump failed (%d, error %lu).", dumpRes, GetLastError());
-
-  if (prevUnhandledExceptionFilter)
-    return prevUnhandledExceptionFilter(exceptionPtrs);
-  else
-    return EXCEPTION_CONTINUE_SEARCH;
 }
 
 static bool HaveWriteAccess(const std::wstring &path)
@@ -393,8 +376,8 @@ int runApplication(MOApplication &application, SingleInstance &instance,
                            + QString::fromStdWString(AppConfig::iniFileName()),
                        QSettings::IniFormat);
 
-    // global crashDumpType sits in OrganizerCore to make a bit less ugly to update it when the settings are changed during runtime
-    OrganizerCore::setGlobalCrashDumpsType(settings.value("Settings/crash_dumps_type", static_cast<int>(CrashDumpsType::Mini)).toInt());
+    CrashCollectionInitialize(
+      OrganizerCore::crashDumpsTypeFromSettings(settings), OrganizerCore::crashDumpsPath().c_str());
 
     qDebug("initializing core");
     OrganizerCore organizer(settings);
@@ -528,7 +511,8 @@ int runApplication(MOApplication &application, SingleInstance &instance,
 
 int main(int argc, char *argv[])
 {
-  prevUnhandledExceptionFilter = SetUnhandledExceptionFilter(MyUnhandledExceptionFilter);
+  // Collect minidumps of process bootstrap, later when settings are read we will change this accordingly
+  CrashCollectionInitialize(CrashDumpsType::Mini, OrganizerCore::crashDumpsPath().c_str());
 
   MOApplication application(argc, argv);
   QStringList arguments = application.arguments();

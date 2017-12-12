@@ -173,8 +173,8 @@ public:
 
   bool cycleDiagnostics();
 
-  static CrashDumpsType getGlobalCrashDumpsType() { return m_globalCrashDumpsType; }
-  static void setGlobalCrashDumpsType(int crashDumpsType);
+  static CrashDumpsType toCrashDumpsType(int type);
+  static CrashDumpsType crashDumpsTypeFromSettings(const QSettings& settings);
   static std::wstring crashDumpsPath();
 
 public:

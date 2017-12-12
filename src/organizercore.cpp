@@ -28,6 +28,7 @@
 #include <scopeguard.h>
 #include <utility.h>
 #include <usvfs.h>
+#include <crashcollection.h>
 #include "appconfig.h"
 #include <report.h>
 #include <questionboxmemory.h>
@@ -67,9 +68,6 @@
 
 using namespace MOShared;
 using namespace MOBase;
-
-//static
-CrashDumpsType OrganizerCore::m_globalCrashDumpsType = CrashDumpsType::None;
 
 static bool isOnline()
 {
@@ -653,8 +651,9 @@ void OrganizerCore::prepareVFS()
 }
 
 void OrganizerCore::updateVFSParams(int logLevel, int crashDumpsType) {
-  setGlobalCrashDumpsType(crashDumpsType);
-  m_USVFS.updateParams(logLevel, crashDumpsType);
+  CrashDumpsType dumpType = toCrashDumpsType(crashDumpsType);
+  CrashCollectionInitialize(dumpType, crashDumpsPath().c_str());
+  m_USVFS.updateParams(logLevel, dumpType);
 }
 
 bool OrganizerCore::cycleDiagnostics() {
@@ -664,9 +663,26 @@ bool OrganizerCore::cycleDiagnostics() {
 }
 
 //static
-void OrganizerCore::setGlobalCrashDumpsType(int crashDumpsType) {
-  m_globalCrashDumpsType = ::crashDumpsType(crashDumpsType);
+CrashDumpsType OrganizerCore::toCrashDumpsType(int type) {
+  switch (type) {
+  case CrashDumpsType::Mini:
+    return CrashDumpsType::Mini;
+  case CrashDumpsType::Data:
+    return CrashDumpsType::Data;
+  case CrashDumpsType::Full:
+    return CrashDumpsType::Full;
+  default:
+    return CrashDumpsType::None;
+  }
 }
+
+//static
+CrashDumpsType OrganizerCore::crashDumpsTypeFromSettings(const QSettings& settings)
+{
+  return toCrashDumpsType(
+    settings.value("Settings/crash_dumps_type", static_cast<int>(CrashDumpsType::Mini)).toInt());
+}
+
 
 //static
 std::wstring OrganizerCore::crashDumpsPath() {
